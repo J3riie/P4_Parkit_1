@@ -35,6 +35,12 @@ public class FareCalculatorService {
         }
     }
 
+    private Duration calculateDuration(Date in, Date out) {
+        LocalDateTime start = in.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime outDate = out.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        return Duration.between(start, outDate);
+    }
+
     private double computePrice(Duration duration, double ratePerHour) {
         if (is45MinutesParking(duration)) {
             return ratePerHour * 0.75;
@@ -45,11 +51,5 @@ public class FareCalculatorService {
 
     private boolean is45MinutesParking(Duration duration) {
         return duration.toMinutes() == MINUTES_PARKING;
-    }
-
-    private Duration calculateDuration(Date in, Date out) {
-        LocalDateTime start = in.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        LocalDateTime outDate = out.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        return Duration.between(start, outDate);
     }
 }
