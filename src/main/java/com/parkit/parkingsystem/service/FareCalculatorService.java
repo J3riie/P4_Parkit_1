@@ -4,11 +4,11 @@ import com.parkit.parkingsystem.model.Ticket;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
 
 import static com.parkit.parkingsystem.constants.Fare.BIKE_RATE_PER_HOUR;
 import static com.parkit.parkingsystem.constants.Fare.CAR_RATE_PER_HOUR;
+import static java.time.ZoneId.systemDefault;
 
 public class FareCalculatorService {
 
@@ -36,8 +36,8 @@ public class FareCalculatorService {
     }
 
     private Duration calculateDuration(Date in, Date out) {
-        LocalDateTime start = in.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        LocalDateTime outDate = out.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime start = in.toInstant().atZone(systemDefault()).toLocalDateTime();
+        LocalDateTime outDate = out.toInstant().atZone(systemDefault()).toLocalDateTime();
         return Duration.between(start, outDate);
     }
 
