@@ -19,7 +19,6 @@ public class FareCalculatorService {
             throw new IllegalArgumentException("Out time provided is incorrect:" + ticket.getOutTime().toString());
         }
 
-        //TODO: Some tests are failing here. Need to check if this logic is correct
         Duration duration = calculateDuration(ticket.getInTime(), ticket.getOutTime());
 
         switch (ticket.getParkingSpot().getParkingType()) {
