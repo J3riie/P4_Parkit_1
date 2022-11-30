@@ -8,8 +8,6 @@ import static java.time.ZoneId.systemDefault;
 
 public class Ticket {
 
-    public static final int MINUTES_PARKING = 45;
-
     private int id;
     private ParkingSpot parkingSpot;
     private String vehicleRegNumber;
@@ -67,15 +65,15 @@ public class Ticket {
 
     public void computePrice(double ratePerHour) {
         Duration duration = calculateDuration();
-        if (is45MinutesParking(duration)) {
-            this.setPrice(ratePerHour * 0.75);
+        if (isDurationInMinutes(duration)) {
+            this.setPrice(ratePerHour * duration.toMinutes() / 60);
         } else {
             this.setPrice(duration.toHours() * ratePerHour);
         }
     }
 
-    private boolean is45MinutesParking(Duration duration) {
-        return duration.toMinutes() == MINUTES_PARKING;
+    private boolean isDurationInMinutes(Duration duration) {
+        return duration.toMinutes() > 0;
     }
 
     private Duration calculateDuration() {
