@@ -79,8 +79,8 @@ public class Ticket {
     }
 
     private Duration calculateDuration() {
-        LocalDateTime start = getInTime().toInstant().atZone(systemDefault()).toLocalDateTime();
-        LocalDateTime outDate = getOutTime().toInstant().atZone(systemDefault()).toLocalDateTime();
+        LocalDateTime start = this.inTime.toInstant().atZone(systemDefault()).toLocalDateTime();
+        LocalDateTime outDate = this.outTime.toInstant().atZone(systemDefault()).toLocalDateTime();
         return Duration.between(start, outDate);
     }
 }
