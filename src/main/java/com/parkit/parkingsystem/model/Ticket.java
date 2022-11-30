@@ -65,14 +65,14 @@ public class Ticket {
 
     public void computePrice(double ratePerHour) {
         Duration duration = calculateDuration();
-        if (isDurationInMinutes(duration)) {
+        if (isMinutesParking(duration)) {
             this.setPrice(ratePerHour * duration.toMinutes() / 60);
         } else {
             this.setPrice(duration.toHours() * ratePerHour);
         }
     }
 
-    private boolean isDurationInMinutes(Duration duration) {
+    private boolean isMinutesParking(Duration duration) {
         return duration.toMinutes() > 0;
     }
 
