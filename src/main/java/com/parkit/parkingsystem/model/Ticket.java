@@ -1,9 +1,15 @@
 package com.parkit.parkingsystem.model;
 
-import java.util.Calendar;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Date;
 
+import static java.time.ZoneId.systemDefault;
+
 public class Ticket {
+
+    public static final int MINUTES_PARKING = 45;
+
     private int id;
     private ParkingSpot parkingSpot;
     private String vehicleRegNumber;
@@ -57,5 +63,24 @@ public class Ticket {
 
     public void setOutTime(Date outTime) {
         this.outTime = outTime;
+    }
+
+    public void computePrice(double ratePerHour) {
+        Duration duration = calculateDuration();
+        if (is45MinutesParking(duration)) {
+            this.setPrice(ratePerHour * 0.75);
+        } else {
+            this.setPrice(duration.toHours() * ratePerHour);
+        }
+    }
+
+    private boolean is45MinutesParking(Duration duration) {
+        return duration.toMinutes() == MINUTES_PARKING;
+    }
+
+    private Duration calculateDuration() {
+        LocalDateTime start = getInTime().toInstant().atZone(systemDefault()).toLocalDateTime();
+        LocalDateTime outDate = getOutTime().toInstant().atZone(systemDefault()).toLocalDateTime();
+        return Duration.between(start, outDate);
     }
 }
