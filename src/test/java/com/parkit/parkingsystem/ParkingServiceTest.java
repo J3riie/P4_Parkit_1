@@ -17,6 +17,7 @@ import java.util.Date;
 
 import static com.parkit.parkingsystem.constants.ParkingType.CAR;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,7 +36,6 @@ public class ParkingServiceTest {
     public void setUpPerTest() {
         try {
             when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
-
             parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
         } catch (Exception e) {
             e.printStackTrace();
@@ -82,17 +82,6 @@ public class ParkingServiceTest {
     }
 
     @Test
-    public void applyDiscountForRecurrentUsers() {
-        Date inTime = new Date(System.currentTimeMillis() - (60 * 60 * 1000));
-        Ticket previousTicket = generateTicket(CAR, inTime);
-        when(ticketDAO.findByVehicleRegNumberAndOutTimeIsNotNull(anyString())).thenReturn(previousTicket);
-        parkingService.processExitingVehicle();
-
-        verify(ticketDAO, times(1)).updateTicket(previousTicket);
-
-    }
-
-    @Test
     public void parkForAShortAmountOfTime_shouldBeFree_whenUserStaysUnder30Minutes() {
         Date inTime = new Date(System.currentTimeMillis() - (30 * 60 * 1000));
         Ticket ticket = generateTicket(CAR, inTime);
@@ -104,6 +93,24 @@ public class ParkingServiceTest {
         verify(ticketDAO, times(1)).updateTicket(ticket);
         verify(parkingSpotDAO, times(1)).updateParking(any(ParkingSpot.class));
         assertEquals(0.0, ticket.getPrice());
+    }
+
+    @Test
+    public void applyDiscountForRecurrentUsers() {
+        Date inTime = new Date(System.currentTimeMillis() - (60 * 60 * 1000));
+        Ticket previousTicket = generateTicket(CAR, inTime);
+        Ticket currentTicket = generateTicket(CAR, inTime);
+        when(ticketDAO.findByVehicleRegNumberAndOutTimeIsNotNull(anyString())).thenReturn(previousTicket);
+        when(ticketDAO.getTicket(anyString())).thenReturn(currentTicket);
+        when(ticketDAO.updateTicket(any(Ticket.class))).thenReturn(true);
+        when(parkingSpotDAO.updateParking(any(ParkingSpot.class))).thenReturn(true);
+
+        parkingService.processExitingVehicle();
+
+        assertEquals(0.95 * 1.5, currentTicket.getPrice());
+        verify(ticketDAO, times(1)).updateTicket(currentTicket);
+        assertTrue(currentTicket.getParkingSpot().isAvailable());
+
     }
 
     private Ticket generateTicket(ParkingType type, Date inTime) {

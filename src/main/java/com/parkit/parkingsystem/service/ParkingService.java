@@ -60,7 +60,14 @@ public class ParkingService {
             Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
             Date outTime = new Date();
             ticket.setOutTime(outTime);
-            fareCalculatorService.calculateFare(ticket);
+            boolean isRecurringUser = ticketDAO.findByVehicleRegNumberAndOutTimeIsNotNull(vehicleRegNumber) != null;
+
+            if (isRecurringUser) {
+                fareCalculatorService.calculateFare(ticket, 0.95);
+            } else {
+                fareCalculatorService.calculateFare(ticket, 1);
+            }
+
             if (ticketDAO.updateTicket(ticket)) {
                 ParkingSpot parkingSpot = ticket.getParkingSpot();
                 parkingSpot.setAvailable(true);

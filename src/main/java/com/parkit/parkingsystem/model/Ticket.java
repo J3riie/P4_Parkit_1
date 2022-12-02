@@ -72,7 +72,7 @@ public class Ticket {
         }
     }
 
-    private static boolean isParkingTimeUnder30Min(Duration duration) {
+    private boolean isParkingTimeUnder30Min(Duration duration) {
         return duration.toMinutes() <= 30;
     }
 
@@ -80,5 +80,9 @@ public class Ticket {
         LocalDateTime start = this.inTime.toInstant().atZone(systemDefault()).toLocalDateTime();
         LocalDateTime outDate = this.outTime.toInstant().atZone(systemDefault()).toLocalDateTime();
         return Duration.between(start, outDate);
+    }
+
+    public boolean isOutOfDate() {
+        return this.outTime == null || this.outTime.before(this.inTime);
     }
 }
