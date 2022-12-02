@@ -82,6 +82,17 @@ public class ParkingServiceTest {
     }
 
     @Test
+    public void applyDiscountForRecurrentUsers() {
+        Date inTime = new Date(System.currentTimeMillis() - (60 * 60 * 1000));
+        Ticket previousTicket = generateTicket(CAR, inTime);
+        when(ticketDAO.findByVehicleRegNumberAndOutTimeIsNotNull(anyString())).thenReturn(previousTicket);
+        parkingService.processExitingVehicle();
+
+        verify(ticketDAO, times(1)).updateTicket(previousTicket);
+
+    }
+
+    @Test
     public void parkForAShortAmountOfTime_shouldBeFree_whenUserStaysUnder30Minutes() {
         Date inTime = new Date(System.currentTimeMillis() - (30 * 60 * 1000));
         Ticket ticket = generateTicket(CAR, inTime);
